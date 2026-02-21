@@ -5,27 +5,30 @@ PORT=${PORT:-8080}
 SANDBOX_PORT=6865
 JSON_API_PORT=7575
 
+export JAVA_OPTS="${JAVA_OPTS:--Xmx2g -Xms512m}"
+
 echo "=== slinky — starting Canton sandbox ==="
-daml sandbox --port $SANDBOX_PORT slinky.dar &
+daml sandbox --port $SANDBOX_PORT --dar slinky.dar &
 SANDBOX_PID=$!
 
 # Wait for sandbox gRPC to be ready
 echo "Waiting for Canton sandbox on port $SANDBOX_PORT..."
-for i in $(seq 1 60); do
-    if curl -sf http://127.0.0.1:$SANDBOX_PORT/health 2>/dev/null || \
-       bash -c "echo > /dev/tcp/127.0.0.1/$SANDBOX_PORT" 2>/dev/null; then
-        echo "Canton sandbox is ready."
+for i in $(seq 1 90); do
+    if bash -c "echo > /dev/tcp/127.0.0.1/$SANDBOX_PORT" 2>/dev/null; then
+        echo "Canton sandbox is ready (took ${i}s)."
         break
     fi
-    if [ $i -eq 60 ]; then
-        echo "ERROR: Canton sandbox did not start within 60s"
+    if [ $i -eq 90 ]; then
+        echo "ERROR: Canton sandbox did not start within 90s"
+        echo "--- Sandbox process status ---"
+        kill -0 $SANDBOX_PID 2>/dev/null && echo "Process still running" || echo "Process died"
         exit 1
     fi
     sleep 1
 done
 
-# Give it a couple extra seconds to fully initialize
-sleep 3
+# Give it extra time to fully initialize
+sleep 5
 
 echo "=== Starting JSON API on port $JSON_API_PORT ==="
 daml json-api \
@@ -37,13 +40,12 @@ JSON_API_PID=$!
 
 # Wait for JSON API to be ready
 echo "Waiting for JSON API on port $JSON_API_PORT..."
-for i in $(seq 1 30); do
-    if curl -sf http://127.0.0.1:$JSON_API_PORT/readyz 2>/dev/null || \
-       bash -c "echo > /dev/tcp/127.0.0.1/$JSON_API_PORT" 2>/dev/null; then
-        echo "JSON API is ready."
+for i in $(seq 1 60); do
+    if bash -c "echo > /dev/tcp/127.0.0.1/$JSON_API_PORT" 2>/dev/null; then
+        echo "JSON API is ready (took ${i}s)."
         break
     fi
-    if [ $i -eq 30 ]; then
+    if [ $i -eq 60 ]; then
         echo "WARNING: JSON API health check timed out, continuing anyway..."
     fi
     sleep 1

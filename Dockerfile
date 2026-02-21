@@ -48,9 +48,16 @@ WORKDIR /app
 
 # Copy artifacts
 COPY --from=daml-build /build/.daml/dist/slinky-0.1.0.dar ./slinky.dar
+COPY --from=daml-build /build/daml.yaml .
+COPY --from=daml-build /build/daml/ ./daml/
 COPY --from=frontend-build /build/dist ./frontend
 COPY nginx.conf /etc/nginx/nginx.conf.template
 COPY start.sh .
-RUN chmod +x start.sh
+
+# Fix Windows CRLF line endings and make executable
+RUN sed -i 's/\r$//' start.sh nginx.conf && chmod +x start.sh
+
+# JVM tuning for Railway (keep heap reasonable)
+ENV JAVA_OPTS="-Xmx2g -Xms512m"
 
 CMD ["./start.sh"]
