@@ -7,16 +7,8 @@ JSON_API_PORT=7575
 
 # JAVA_TOOL_OPTIONS is set in Dockerfile and respected by all JVM processes
 
-# Read package ID (extracted at build time from DAR manifest) and inject into frontend
-echo "=== Injecting Daml package ID ==="
-PKG_ID=$(cat /app/package-id.txt 2>/dev/null | tr -d '[:space:]')
-if [ -n "$PKG_ID" ]; then
-    echo "window.__DAML_PACKAGE_ID__='${PKG_ID}';" > /app/frontend/daml-config.js
-    echo "Package ID: $PKG_ID"
-else
-    echo "ERROR: package-id.txt is missing or empty!"
-    exit 1
-fi
+# Package ID is baked into the JS bundle by Vite from .env at build time
+echo "=== slinky starting ==="
 
 # Start nginx FIRST so Railway healthcheck passes immediately
 echo "=== Starting nginx on port $PORT ==="
