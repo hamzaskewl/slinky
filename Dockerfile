@@ -55,7 +55,7 @@ COPY nginx.conf /etc/nginx/nginx.conf.template
 COPY start.sh .
 
 # Fix Windows CRLF line endings and make executable
-RUN sed -i 's/\r$//' start.sh nginx.conf && chmod +x start.sh
+RUN sed -i 's/\r$//' start.sh /etc/nginx/nginx.conf.template && chmod +x start.sh
 
 # JVM tuning for Railway (keep heap reasonable)
 ENV JAVA_OPTS="-Xmx2g -Xms512m"
