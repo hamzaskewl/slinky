@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { canton, getPartyId, escrowToken, ClaimReceipt, ContractResult } from "../lib/canton";
 import { useAuth } from "../contexts/AuthContext";
-import { Download, Lock, Check, RefreshCw, AlertCircle } from "lucide-react";
+import { Download, Lock, Check, RefreshCw, AlertCircle, Shield } from "lucide-react";
 import React from "react";
+
+type ClaimConfirmation = {
+  amount: string;
+  currency: string;
+  memo: string;
+};
 
 export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string }) {
   const { user } = useAuth();
@@ -11,6 +17,7 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
   const [claiming, setClaiming] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [confirmation, setConfirmation] = useState<ClaimConfirmation | null>(null);
 
   const [preview, setPreview] = useState<{ contractId: string; amount: string; currency: string; memo: string } | null>(null);
 
@@ -75,9 +82,8 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
         eToken
       );
 
-      setSuccess(`Payment claimed! ${formatAmount(preview.amount)} ${preview.currency}`);
+      setConfirmation({ amount: preview.amount, currency: preview.currency, memo: preview.memo });
       setPreview(null);
-      window.location.hash = "";
       await loadData();
     } catch (err: any) {
       setError(err.message || "Failed to claim. The link may have already been claimed or revoked.");
@@ -134,8 +140,47 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
         </div>
       )}
 
+      {/* Claim Confirmation */}
+      {confirmation && (
+        <div className="bg-surface-raised border border-surface-border rounded-2xl p-8 text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 border-2 border-white/20 mb-5">
+            <Check className="w-10 h-10 text-white" />
+          </div>
+
+          <h3 className="text-2xl font-bold text-white mb-2">Payment Claimed</h3>
+
+          <div className="text-4xl font-bold text-white my-4">
+            {formatAmount(confirmation.amount)} {confirmation.currency}
+          </div>
+
+          {confirmation.memo && (
+            <div className="bg-surface-hover rounded-lg p-3 mb-4 inline-block">
+              <span className="text-slate-400 text-sm">{confirmation.memo}</span>
+            </div>
+          )}
+
+          <div className="mt-4 space-y-3 max-w-sm mx-auto">
+            <div className="flex items-center gap-3 text-sm text-slate-400 bg-surface-hover rounded-lg p-3">
+              <Shield className="w-5 h-5 text-accent shrink-0" />
+              <span className="text-left">Sender identity is not recorded on your ledger view. This is enforced by Canton's sub-transaction privacy.</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-slate-400 bg-surface-hover rounded-lg p-3">
+              <Lock className="w-5 h-5 text-accent shrink-0" />
+              <span className="text-left">Your identity is not visible to the sender. They only receive a confirmation that the link was claimed.</span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => { setConfirmation(null); window.location.hash = ""; }}
+            className="mt-6 px-6 py-3 bg-white text-surface rounded-xl font-semibold hover:bg-slate-200 transition-all shadow-lg shadow-white/10"
+          >
+            Done
+          </button>
+        </div>
+      )}
+
       {/* Claim Preview */}
-      {preview && (
+      {preview && !confirmation && (
         <div className="bg-surface-raised border border-surface-border rounded-2xl p-8 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 border border-white/10 mb-4">
             <Download className="w-8 h-8 text-accent" />
