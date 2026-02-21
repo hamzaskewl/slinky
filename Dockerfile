@@ -13,9 +13,10 @@ COPY daml.yaml .
 COPY daml/ daml/
 RUN daml build
 
-# Extract package ID from the built DAR
+# Extract main package ID from the built DAR
 RUN daml damlc inspect-dar .daml/dist/slinky-0.1.0.dar \
-    | head -1 | awk '{print $2}' > /build/package-id.txt
+    | awk '/main/{print $1}' > /build/package-id.txt && \
+    echo "Package ID: $(cat /build/package-id.txt)"
 
 # ── Stage 2: Build Frontend ──────────────────────────────────────
 FROM node:20-slim AS frontend-build

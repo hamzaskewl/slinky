@@ -5,3 +5,4 @@ notes.md
 .claude/
 .daml/
 *.log
+*.gz

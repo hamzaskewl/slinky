@@ -11,7 +11,7 @@ export JAVA_OPTS="${JAVA_OPTS:--Xmx2g -Xms512m}"
 echo "=== Starting nginx on port $PORT ==="
 export PORT
 envsubst '$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
-nginx &
+nginx -g 'daemon off;' &
 NGINX_PID=$!
 echo "nginx started on port $PORT (PID $NGINX_PID)"
 
