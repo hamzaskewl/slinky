@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth, Role } from "../contexts/AuthContext";
+import { navigate } from "../lib/router";
 import { Link2, Shield, Send, Download } from "lucide-react";
 import React from "react";
 
@@ -32,6 +33,7 @@ export default function Auth() {
     try {
       const party = DEMO_PARTIES[role];
       await signIn(party.partyId, role);
+      navigate("/send");
     } catch (err: any) {
       setError(err.message || "Failed to connect to Canton. Is `daml start` running?");
     } finally {
@@ -46,6 +48,7 @@ export default function Auth() {
     setError("");
     try {
       await signUp(customParty.trim(), customName.trim(), "", customRole);
+      navigate("/send");
     } catch (err: any) {
       setError(err.message || "Failed to connect to Canton. Is `daml start` running?");
     } finally {
@@ -57,10 +60,12 @@ export default function Auth() {
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-500/30 mb-4">
+          <button onClick={() => navigate("/")} className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-500/30 mb-4 hover:opacity-80 transition-opacity">
             <Link2 className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-white">PrivyPay</h1>
+          </button>
+          <h1 className="text-3xl font-bold text-white">
+            <button onClick={() => navigate("/")} className="hover:opacity-80 transition-opacity">PrivyPay</button>
+          </h1>
           <p className="text-slate-400 mt-1">Private payment links on Canton Network</p>
         </div>
 
@@ -136,41 +141,59 @@ export default function Auth() {
           ) : (
             <form onSubmit={handleCustomLogin} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Party ID</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1.5">Party ID</label>
                 <input
                   type="text"
                   value={customParty}
                   onChange={(e) => setCustomParty(e.target.value)}
                   required
                   placeholder="e.g., charlie"
-                  className="w-full px-4 py-2 bg-slate-800 border border-slate-700 text-white rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none placeholder:text-slate-500"
+                  className="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/50 text-white rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none placeholder:text-slate-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Display Name</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1.5">Display Name</label>
                 <input
                   type="text"
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
                   placeholder="Your name (optional)"
-                  className="w-full px-4 py-2 bg-slate-800 border border-slate-700 text-white rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none placeholder:text-slate-500"
+                  className="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/50 text-white rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none placeholder:text-slate-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Role</label>
-                <select
-                  value={customRole}
-                  onChange={(e) => setCustomRole(e.target.value as Role)}
-                  className="w-full px-4 py-2 bg-slate-800 border border-slate-700 text-white rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none"
-                >
-                  <option value="sender">Sender</option>
-                  <option value="claimer">Claimer</option>
-                </select>
+                <label className="block text-sm font-medium text-slate-300 mb-1.5">Role</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCustomRole("sender")}
+                    className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${
+                      customRole === "sender"
+                        ? "bg-violet-500/20 border-violet-500/40 text-violet-300 shadow-sm shadow-violet-500/10"
+                        : "bg-slate-800/80 border-slate-700/50 text-slate-400 hover:border-slate-600 hover:text-slate-300"
+                    }`}
+                  >
+                    <Send className="w-4 h-4" />
+                    Sender
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCustomRole("claimer")}
+                    className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${
+                      customRole === "claimer"
+                        ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300 shadow-sm shadow-emerald-500/10"
+                        : "bg-slate-800/80 border-slate-700/50 text-slate-400 hover:border-slate-600 hover:text-slate-300"
+                    }`}
+                  >
+                    <Download className="w-4 h-4" />
+                    Claimer
+                  </button>
+                </div>
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-violet-500 to-purple-500 text-white py-3 rounded-lg font-semibold hover:from-violet-600 hover:to-purple-600 transition-all shadow-lg shadow-violet-500/20 disabled:opacity-50"
+                className="w-full bg-gradient-to-r from-violet-500 to-purple-500 text-white py-3 rounded-xl font-semibold hover:from-violet-600 hover:to-purple-600 transition-all shadow-lg shadow-violet-500/20 disabled:opacity-50"
               >
                 {loading ? "Connecting..." : "Connect"}
               </button>

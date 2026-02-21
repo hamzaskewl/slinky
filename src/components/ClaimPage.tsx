@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { canton, getPartyId, escrowToken, ClaimReceipt, ContractResult } from "../lib/canton";
 import { useAuth } from "../contexts/AuthContext";
-import { Download, Shield, Lock, Check, RefreshCw, AlertCircle } from "lucide-react";
+import { Download, Lock, Check, RefreshCw, AlertCircle } from "lucide-react";
 import React from "react";
 
 export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string }) {
@@ -112,8 +112,8 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
         <div className="flex items-center gap-3">
           <Download className="w-8 h-8 text-emerald-400" />
           <div>
-            <h2 className="text-2xl font-bold text-white">Claim</h2>
-            <p className="text-slate-400">Claim payments and view your receipts</p>
+            <h2 className="text-2xl font-bold text-white">Claims</h2>
+            <p className="text-sm text-slate-400">Claim payments and view your receipts</p>
           </div>
         </div>
         <button
@@ -122,13 +122,6 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
         >
           <RefreshCw className="w-5 h-5" />
         </button>
-      </div>
-
-      <div className="flex items-center gap-2 p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-lg">
-        <Shield className="w-5 h-5 text-emerald-400 shrink-0" />
-        <p className="text-sm text-emerald-300">
-          Your receipts show the amount and memo, but never the sender's identity.
-        </p>
       </div>
 
       {error && (

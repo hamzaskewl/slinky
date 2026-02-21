@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState, useCallback } from "react";
+import React, { createContext, useContext, useMemo, useState, useCallback, useEffect } from "react";
 import { allocateParty, initializeParties } from "../lib/canton";
 
 export type Role = "sender" | "claimer";
@@ -22,9 +22,13 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+function base64url(str: string): string {
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
 function generateLocalToken(partyId: string): string {
-  const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const payload = btoa(JSON.stringify({
+  const header = base64url(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const payload = base64url(JSON.stringify({
     "https://daml.com/ledger-api": {
       ledgerId: "sandbox",
       applicationId: "privypay",
@@ -51,7 +55,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     return parsed;
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!!localStorage.getItem("privypay_user"));
+
+  // Re-populate party registry when restoring session from localStorage
+  useEffect(() => {
+    if (user) {
+      const hints = [user.partyHint, ...SHARED_PARTIES.filter(p => p !== user.partyHint)];
+      initializeParties(hints)
+        .catch((err) => console.error("Failed to re-initialize parties:", err))
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
   const signIn = useCallback(async (partyHint: string, role: Role) => {
     setLoading(true);
@@ -66,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         partyId: fullPartyId,
         partyHint,
         token,
-        fullName: partyHint,
+        fullName: partyHint.charAt(0).toUpperCase() + partyHint.slice(1),
         role,
         email: "",
       };

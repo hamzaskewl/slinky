@@ -4,3 +4,4 @@ dist
 notes.md
 .claude/
 .daml/
+*.log

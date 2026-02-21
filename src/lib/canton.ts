@@ -51,6 +51,12 @@ export type ContractResult<T> = {
   payload: T;
 };
 
+// -- Base64url encoding for JWTs (no padding, URL-safe chars) --
+
+function base64url(str: string): string {
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
 // -- Helper to build fully qualified template IDs --
 
 function templateId(templateName: string): string {
@@ -69,8 +75,8 @@ export function getPartyId(hint: string): string {
 }
 
 function adminToken(): string {
-  const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const payload = btoa(JSON.stringify({
+  const header = base64url(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const payload = base64url(JSON.stringify({
     "https://daml.com/ledger-api": {
       ledgerId: "sandbox",
       applicationId: "privypay",
@@ -83,8 +89,8 @@ function adminToken(): string {
 }
 
 export function escrowToken(escrowPartyId: string): string {
-  const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const payload = btoa(JSON.stringify({
+  const header = base64url(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const payload = base64url(JSON.stringify({
     "https://daml.com/ledger-api": {
       ledgerId: "sandbox",
       applicationId: "privypay",
@@ -181,7 +187,7 @@ export async function queryContracts<T>(
     body.query = filter;
   }
   const result = await apiCall('/v1/query', body, token);
-  return result.result;
+  return result.result || [];
 }
 
 export async function exerciseChoice(
