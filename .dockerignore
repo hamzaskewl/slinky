@@ -3,6 +3,5 @@ dist
 .daml
 .git
 *.md
-.env
 .env.local
 .env.example

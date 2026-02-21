@@ -31,10 +31,8 @@ RUN npm ci
 COPY . .
 COPY --from=daml-build /build/package-id.txt .
 
-# Bake the package ID into the Vite build
-RUN VITE_DAML_PACKAGE_ID=$(cat package-id.txt) \
-    VITE_CANTON_API_URL="" \
-    npm run build
+# Bake the package ID into the Vite build (.env has VITE_DAML_PACKAGE_ID)
+RUN VITE_CANTON_API_URL="" npm run build
 
 # ── Stage 3: Runtime ─────────────────────────────────────────────
 FROM eclipse-temurin:17-jre-jammy
