@@ -5,7 +5,7 @@ PORT=${PORT:-8080}
 SANDBOX_PORT=6865
 JSON_API_PORT=7575
 
-export JAVA_OPTS="${JAVA_OPTS:--Xmx2g -Xms512m}"
+# JAVA_TOOL_OPTIONS is set in Dockerfile and respected by all JVM processes
 
 # Read package ID (extracted at build time from DAR manifest) and inject into frontend
 echo "=== Injecting Daml package ID ==="

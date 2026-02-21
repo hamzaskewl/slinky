@@ -65,7 +65,8 @@ RUN echo "// placeholder — start.sh will inject real package ID" > /app/fronte
 # Fix Windows CRLF line endings and make executable
 RUN sed -i 's/\r$//' start.sh /etc/nginx/nginx.conf.template && chmod +x start.sh
 
-# JVM tuning for Railway (keep heap reasonable)
-ENV JAVA_OPTS="-Xmx2g -Xms512m"
+# JVM tuning for Railway — JAVA_TOOL_OPTIONS is respected by all Java processes
+# (JAVA_OPTS is ignored by daml sandbox/json-api)
+ENV JAVA_TOOL_OPTIONS="-Xmx1500m -Xms256m"
 
 CMD ["./start.sh"]
