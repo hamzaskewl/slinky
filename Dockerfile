@@ -23,7 +23,7 @@ RUN npm ci
 COPY . .
 
 # Bake the package ID into the Vite build
-RUN VITE_DAML_PACKAGE_ID=2672161aaa8903d091f4dc259634a96adbd37dee2053c6c950c1350128301cd2 \
+RUN VITE_DAML_PACKAGE_ID=6946fc3bd2a0c17b718b7493b8ce0b7e10f1a0ccb6af9fe8d0fb9783d23021b0 \
     VITE_CANTON_API_URL="" \
     npm run build
 
