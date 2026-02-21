@@ -55,6 +55,9 @@ COPY --from=frontend-build /build/dist ./frontend
 COPY nginx.conf /etc/nginx/nginx.conf.template
 COPY start.sh .
 
+# Create placeholder daml-config.js (will be overwritten at runtime with real package ID)
+RUN echo "// placeholder — start.sh will inject real package ID" > /app/frontend/daml-config.js
+
 # Fix Windows CRLF line endings and make executable
 RUN sed -i 's/\r$//' start.sh /etc/nginx/nginx.conf.template && chmod +x start.sh
 

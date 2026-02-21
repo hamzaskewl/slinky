@@ -5,7 +5,7 @@
 // In dev, Vite proxies /v1/* to localhost:7575 (avoids CORS)
 // In production, set VITE_CANTON_API_URL to the actual Canton JSON API endpoint
 const CANTON_API = import.meta.env.VITE_CANTON_API_URL || '';
-const PACKAGE_ID = import.meta.env.VITE_DAML_PACKAGE_ID || '';
+const PACKAGE_ID = import.meta.env.VITE_DAML_PACKAGE_ID || (window as any).__DAML_PACKAGE_ID__ || '';
 const MODULE_NAME = 'Slinky';
 
 // -- Types matching our Daml templates --

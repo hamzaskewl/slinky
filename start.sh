@@ -7,6 +7,21 @@ JSON_API_PORT=7575
 
 export JAVA_OPTS="${JAVA_OPTS:--Xmx2g -Xms512m}"
 
+# Extract package ID from DAR and inject into frontend as runtime config
+echo "=== Extracting Daml package ID ==="
+PKG_ID=$(daml damlc inspect-dar slinky.dar 2>/dev/null | grep -oE '^[a-f0-9]{64}' | head -1)
+if [ -z "$PKG_ID" ]; then
+    # Fallback: try matching the line with "main"
+    PKG_ID=$(daml damlc inspect-dar slinky.dar 2>/dev/null | grep "main" | awk '{print $1}')
+fi
+if [ -n "$PKG_ID" ]; then
+    echo "window.__DAML_PACKAGE_ID__='${PKG_ID}';" > /app/frontend/daml-config.js
+    echo "Package ID: $PKG_ID"
+else
+    echo "WARNING: Could not extract package ID, creating empty config"
+    echo "// package ID not found" > /app/frontend/daml-config.js
+fi
+
 # Start nginx FIRST so Railway healthcheck passes immediately
 echo "=== Starting nginx on port $PORT ==="
 export PORT
