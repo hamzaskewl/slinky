@@ -57,12 +57,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
   const [loading, setLoading] = useState(!!localStorage.getItem("slinky_user"));
 
-  // Re-populate party registry when restoring session from localStorage
+  // Re-populate party registry and update party ID (sandbox resets on each deploy)
   useEffect(() => {
     if (user) {
       const hints = [user.partyHint, ...SHARED_PARTIES.filter(p => p !== user.partyHint)];
       initializeParties(hints)
-        .catch((err) => console.error("Failed to re-initialize parties:", err))
+        .then(async () => {
+          const freshPartyId = await allocateParty(user.partyHint);
+          if (freshPartyId !== user.partyId) {
+            const token = generateLocalToken(freshPartyId);
+            const updated = { ...user, partyId: freshPartyId, token };
+            localStorage.setItem("slinky_user", JSON.stringify(updated));
+            setUser(updated);
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to re-initialize parties, clearing session:", err);
+          localStorage.removeItem("slinky_user");
+          setUser(null);
+        })
         .finally(() => setLoading(false));
     } else {
       setLoading(false);
