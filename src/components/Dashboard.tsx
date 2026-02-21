@@ -8,6 +8,8 @@ import {
   UserCircle,
   Menu,
   X,
+  ChevronDown,
+  Check,
 } from "lucide-react";
 import SendPage from "./SendPage";
 import ClaimPage from "./ClaimPage";
@@ -21,9 +23,30 @@ const navigation: NavItem[] = [
   { id: "/claim", name: "Claims", icon: Download },
 ];
 
+const QUICK_USERS = [
+  { hint: "alice", role: "sender" as const, label: "Alice (Sender)" },
+  { hint: "bob", role: "claimer" as const, label: "Bob (Claimer)" },
+];
+
 export default function Dashboard({ page, claimId }: { page: string; claimId?: string }) {
-  const { user, signOut } = useAuth();
+  const { user, signOut, signIn } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [switching, setSwitching] = useState(false);
+
+  const handleSwitch = async (hint: string, role: "sender" | "claimer") => {
+    if (user?.partyHint === hint) { setUserMenuOpen(false); return; }
+    setSwitching(true);
+    setUserMenuOpen(false);
+    try {
+      await signIn(hint, role);
+      navigate("/send");
+    } catch (err) {
+      console.error("Failed to switch:", err);
+    } finally {
+      setSwitching(false);
+    }
+  };
 
   const handleNavClick = (id: string) => {
     navigate(id);
@@ -88,31 +111,62 @@ export default function Dashboard({ page, claimId }: { page: string; claimId?: s
 
             {/* User area */}
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => navigate("/account")}
-                className={`flex items-center gap-3 px-4 py-2 rounded-xl transition-all ${
-                  page === "/account"
-                    ? "bg-white/10 text-white"
-                    : "text-slate-400 hover:text-white hover:bg-surface-hover"
-                }`}
-                title="Account"
-              >
-                <UserCircle className="w-6 h-6" />
-                <div className="hidden sm:block text-left px-3 py-1 rounded-lg border border-white/10 bg-white/5">
-                  <div className="text-base font-medium capitalize">{user.role}</div>
-                  <div className="text-sm text-slate-500" title={user.partyId}>
-                    {displayName}
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+                    userMenuOpen
+                      ? "bg-white/10 text-white"
+                      : "text-slate-400 hover:text-white hover:bg-surface-hover"
+                  }`}
+                >
+                  <UserCircle className="w-6 h-6" />
+                  <div className="hidden sm:block text-left">
+                    <div className="text-base font-medium capitalize">{switching ? "Switching..." : displayName}</div>
+                    <div className="text-xs text-slate-500 capitalize">{user.role}</div>
                   </div>
-                </div>
-              </button>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${userMenuOpen ? "rotate-180" : ""}`} />
+                </button>
 
-              <button
-                onClick={signOut}
-                className="p-3 rounded-xl text-slate-400 hover:text-white hover:bg-surface-hover transition-colors"
-                title="Sign out"
-              >
-                <LogOut className="w-6 h-6" />
-              </button>
+                {userMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-surface-raised border border-surface-border rounded-xl shadow-xl overflow-hidden z-50">
+                    <div className="p-2 border-b border-surface-border">
+                      <div className="px-3 py-1 text-xs text-slate-500 uppercase tracking-wider">Switch User</div>
+                    </div>
+                    {QUICK_USERS.map((u) => (
+                      <button
+                        key={u.hint}
+                        onClick={() => handleSwitch(u.hint, u.role)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-all ${
+                          user.partyHint === u.hint
+                            ? "bg-white/10 text-white"
+                            : "text-slate-400 hover:text-white hover:bg-surface-hover"
+                        }`}
+                      >
+                        <UserCircle className="w-5 h-5" />
+                        <span>{u.label}</span>
+                        {user.partyHint === u.hint && <Check className="w-4 h-4 ml-auto" />}
+                      </button>
+                    ))}
+                    <div className="border-t border-surface-border">
+                      <button
+                        onClick={() => { setUserMenuOpen(false); navigate("/account"); }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-400 hover:text-white hover:bg-surface-hover transition-all"
+                      >
+                        <UserCircle className="w-5 h-5" />
+                        Account
+                      </button>
+                      <button
+                        onClick={() => { setUserMenuOpen(false); signOut(); }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-surface-hover transition-all"
+                      >
+                        <LogOut className="w-5 h-5" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
