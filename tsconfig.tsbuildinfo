@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/accounttab.tsx","./src/components/auth.tsx","./src/components/claimpage.tsx","./src/components/dashboard.tsx","./src/components/landingpage.tsx","./src/components/sendpage.tsx","./src/contexts/authcontext.tsx","./src/lib/canton.ts","./src/lib/router.ts"],"version":"5.9.3"}
