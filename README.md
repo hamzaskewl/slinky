@@ -41,18 +41,13 @@ Slinky uses Canton Network's sub-transaction privacy to create payment links whe
 ## Architecture
 
 ```mermaid
-graph TD
-    subgraph Docker Container
-        A["Nginx :8080<br/><i>Serves React SPA</i><br/><i>Proxies /v1/* to JSON API</i>"] -->|HTTP| B
-        B["Canton JSON API :7575<br/><i>HTTP wrapper for Ledger API</i><br/><i>JWT authentication</i>"] -->|gRPC| C
-        C["Canton Sandbox :6865<br/><i>In-memory Daml ledger</i><br/><i>Sub-transaction privacy</i><br/><i>Loaded: slinky-0.1.0.dar</i>"]
-    end
-    User["Browser"] -->|HTTPS| A
+graph LR
+    Browser["Browser"] -->|HTTPS| Nginx
 
-    style A fill:#1a1a1f,stroke:#2a2a32,color:#fff
-    style B fill:#1a1a1f,stroke:#2a2a32,color:#fff
-    style C fill:#1a1a1f,stroke:#2a2a32,color:#fff
-    style User fill:#0f172a,stroke:#2a2a32,color:#fff
+    subgraph Container ["Docker Container"]
+        direction LR
+        Nginx["Nginx\n:8080"] -->|HTTP| API["JSON API\n:7575"] -->|gRPC| Sandbox["Canton Sandbox\n:6865"]
+    end
 ```
 
 ### Tech Stack
@@ -126,25 +121,23 @@ This isn't access control. It's structural. The ClaimReceipt has no `sender` fie
 
 ```mermaid
 sequenceDiagram
-    participant Alice as Alice (Sender)
-    participant Ledger as Canton Ledger
-    participant Escrow as Escrow Service
-    participant Bob as Bob (Claimer)
+    actor Alice as Alice (Sender)
+    participant Escrow
+    actor Bob as Bob (Claimer)
 
-    Alice->>Ledger: Create ClaimLink contract
-    Ledger-->>Alice: contractId (bearer token)
-    Alice->>Alice: Build URL: slinky.app/#claim/{id}
-    Alice->>Bob: Share URL (any channel)
+    Alice->>Escrow: Create ClaimLink contract
+    Escrow-->>Alice: contractId (bearer token)
+    Alice-->>Alice: Build URL slinky.app/#claim/{id}
+    Alice-)Bob: Share URL (any channel)
 
-    Bob->>Escrow: Open link, present contractId
-    Escrow->>Ledger: Fetch ClaimLink via contractId
-    Escrow->>Ledger: Exercise ProcessClaim
+    Bob->>Escrow: Present contractId
+    Escrow->>Escrow: Exercise ProcessClaim
 
-    Ledger-->>Bob: ClaimReceipt (no sender field)
-    Ledger-->>Alice: ClaimNotification (no claimer field)
+    Escrow-->>Bob: ClaimReceipt (no sender field)
+    Escrow-->>Alice: ClaimNotification (no claimer field)
 
-    Note over Alice: Sees: "Link claimed"<br/>amount, timestamp<br/>WHO CLAIMED? unknown
-    Note over Bob: Sees: "Payment received"<br/>amount, memo<br/>WHO SENT? unknown
+    Note right of Alice: Sees "Link claimed"<br/>amount + timestamp<br/>Claimer: unknown
+    Note left of Bob: Sees "Payment received"<br/>amount + memo<br/>Sender: unknown
 ```
 
 ### What's the Hash in the URL?
