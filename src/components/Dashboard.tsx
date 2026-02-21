@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { navigate } from "../lib/router";
 import {
-  Link2,
   LogOut,
   Send,
   Download,
@@ -50,62 +49,58 @@ export default function Dashboard({ page, claimId }: { page: string; claimId?: s
   const displayName = raw.charAt(0).toUpperCase() + raw.slice(1);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-surface">
       {/* Top nav */}
-      <nav className="bg-slate-900/80 backdrop-blur-xl border-b border-slate-800 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo — clickable to landing */}
+      <nav className="bg-surface-raised border-b border-surface-border sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
+          <div className="flex items-center justify-between h-20">
+            {/* Logo */}
             <button
               onClick={() => navigate("/")}
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
-              <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg">
-                <Link2 className="w-5 h-5 text-white" />
-              </div>
-              <div className="text-left">
-                <h1 className="text-lg font-bold text-white">PrivyPay</h1>
-                <p className="text-xs text-slate-500">Canton Network</p>
+              <img src="/logoshush.png" alt="slinky" className="w-12 h-12 rounded-full object-cover scale-150" />
+              <div className="text-left px-4 py-1.5 rounded-lg border border-white/10 bg-white/5">
+                <h1 className="text-xl font-display font-bold text-white">slinky</h1>
               </div>
             </button>
 
-            {/* Desktop tabs — Send & Claim only */}
-            <div className="hidden md:flex items-center gap-1">
+            {/* Desktop tabs */}
+            <div className="hidden md:flex items-center gap-2">
               {navigation.map((item) => {
                 const Icon = item.icon;
                 return (
                   <button
                     key={item.id}
                     onClick={() => handleNavClick(item.id)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    className={`flex items-center gap-3 px-6 py-3 rounded-xl text-base font-medium transition-all ${
                       page === item.id
-                        ? "bg-violet-500/20 text-violet-300"
-                        : "text-slate-400 hover:text-white hover:bg-slate-800"
+                        ? "bg-white/10 text-white"
+                        : "text-slate-400 hover:text-white hover:bg-surface-hover"
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-5 h-5" />
                     {item.name}
                   </button>
                 );
               })}
             </div>
 
-            {/* User avatar + sign out */}
-            <div className="flex items-center gap-2">
-              {/* User avatar — clicks to Account */}
+            {/* User area */}
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate("/account")}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all ${
+                className={`flex items-center gap-3 px-4 py-2 rounded-xl transition-all ${
                   page === "/account"
-                    ? "bg-violet-500/20 text-violet-300"
-                    : "text-slate-400 hover:text-white hover:bg-slate-800"
+                    ? "bg-white/10 text-white"
+                    : "text-slate-400 hover:text-white hover:bg-surface-hover"
                 }`}
                 title="Account"
               >
-                <UserCircle className="w-5 h-5" />
-                <div className="hidden sm:block text-left">
-                  <div className="text-sm font-medium capitalize">{user.role}</div>
-                  <div className="text-xs text-slate-500" title={user.partyId}>
+                <UserCircle className="w-6 h-6" />
+                <div className="hidden sm:block text-left px-3 py-1 rounded-lg border border-white/10 bg-white/5">
+                  <div className="text-base font-medium capitalize">{user.role}</div>
+                  <div className="text-sm text-slate-500" title={user.partyId}>
                     {displayName}
                   </div>
                 </div>
@@ -113,18 +108,17 @@ export default function Dashboard({ page, claimId }: { page: string; claimId?: s
 
               <button
                 onClick={signOut}
-                className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-3 rounded-xl text-slate-400 hover:text-white hover:bg-surface-hover transition-colors"
                 title="Sign out"
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-6 h-6" />
               </button>
 
-              {/* Mobile menu toggle */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 rounded-lg text-slate-400 hover:text-white"
+                className="md:hidden p-3 rounded-xl text-slate-400 hover:text-white"
               >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
           </div>
@@ -132,20 +126,20 @@ export default function Dashboard({ page, claimId }: { page: string; claimId?: s
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-800 p-2">
+          <div className="md:hidden border-t border-surface-border p-3">
             {navigation.map((item) => {
               const Icon = item.icon;
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                  className={`w-full flex items-center gap-4 px-6 py-4 rounded-xl text-base font-medium transition-all ${
                     page === item.id
-                      ? "bg-violet-500/20 text-violet-300"
+                      ? "bg-white/10 text-white"
                       : "text-slate-400 hover:text-white"
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-6 h-6" />
                   {item.name}
                 </button>
               );
@@ -155,7 +149,7 @@ export default function Dashboard({ page, claimId }: { page: string; claimId?: s
       </nav>
 
       {/* Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-10">
         {renderView()}
       </main>
     </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth, Role } from "../contexts/AuthContext";
 import { navigate } from "../lib/router";
-import { Link2, Shield, Send, Download } from "lucide-react";
+import { Shield, Send, Download } from "lucide-react";
 import React from "react";
 
 const DEMO_PARTIES: Record<Role, { partyId: string; label: string; desc: string }> = {
@@ -57,30 +57,30 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-surface flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <button onClick={() => navigate("/")} className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-500/30 mb-4 hover:opacity-80 transition-opacity">
-            <Link2 className="w-8 h-8 text-white" />
+          <button onClick={() => navigate("/")} className="inline-flex items-center justify-center w-20 h-20 rounded-full overflow-hidden mb-4 hover:opacity-80 transition-opacity">
+            <img src="/logoshush.png" alt="slinky" className="w-full h-full object-cover scale-150" />
           </button>
-          <h1 className="text-3xl font-bold text-white">
-            <button onClick={() => navigate("/")} className="hover:opacity-80 transition-opacity">PrivyPay</button>
+          <h1 className="text-3xl font-display font-bold">
+            <button onClick={() => navigate("/")} className="text-white hover:opacity-80 transition-opacity">slinky</button>
           </h1>
           <p className="text-slate-400 mt-1">Private payment links on Canton Network</p>
         </div>
 
         <div className="flex items-center justify-center gap-2 mb-6">
-          <Shield className="w-4 h-4 text-emerald-400" />
-          <span className="text-sm text-emerald-300">Sub-transaction privacy powered by Daml</span>
+          <Shield className="w-4 h-4 text-accent" />
+          <span className="text-sm text-accent">Privacy enforced at the protocol level</span>
         </div>
 
-        <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-xl p-6">
+        <div className="bg-surface-raised border border-surface-border rounded-2xl shadow-xl p-6">
           <div className="flex gap-2 mb-6">
             <button
               onClick={() => setMode("demo")}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
                 mode === "demo"
-                  ? "bg-violet-500/20 text-violet-300 border border-violet-500/30"
+                  ? "bg-white/10 text-white border border-white/20"
                   : "text-slate-400 hover:text-white border border-transparent"
               }`}
             >
@@ -90,7 +90,7 @@ export default function Auth() {
               onClick={() => setMode("custom")}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
                 mode === "custom"
-                  ? "bg-violet-500/20 text-violet-300 border border-violet-500/30"
+                  ? "bg-white/10 text-white border border-white/20"
                   : "text-slate-400 hover:text-white border border-transparent"
               }`}
             >
@@ -113,10 +113,10 @@ export default function Auth() {
               <button
                 onClick={() => handleQuickLogin("sender")}
                 disabled={loading}
-                className="w-full flex items-center gap-4 p-4 rounded-xl border border-violet-500/20 bg-violet-500/5 hover:bg-violet-500/10 transition-all text-left disabled:opacity-50"
+                className="w-full flex items-center gap-4 p-4 rounded-xl border border-surface-border bg-surface-hover/50 hover:bg-surface-hover transition-all text-left disabled:opacity-50"
               >
-                <div className="p-2 bg-violet-500/20 rounded-lg">
-                  <Send className="w-5 h-5 text-violet-400" />
+                <div className="p-2 bg-white/10 rounded-lg">
+                  <Send className="w-5 h-5 text-accent" />
                 </div>
                 <div>
                   <div className="font-medium text-white">Alice — Sender</div>
@@ -127,10 +127,10 @@ export default function Auth() {
               <button
                 onClick={() => handleQuickLogin("claimer")}
                 disabled={loading}
-                className="w-full flex items-center gap-4 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 transition-all text-left disabled:opacity-50"
+                className="w-full flex items-center gap-4 p-4 rounded-xl border border-surface-border bg-surface-hover/50 hover:bg-surface-hover transition-all text-left disabled:opacity-50"
               >
-                <div className="p-2 bg-emerald-500/20 rounded-lg">
-                  <Download className="w-5 h-5 text-emerald-400" />
+                <div className="p-2 bg-white/10 rounded-lg">
+                  <Download className="w-5 h-5 text-accent" />
                 </div>
                 <div>
                   <div className="font-medium text-white">Bob — Claimer</div>
@@ -148,7 +148,7 @@ export default function Auth() {
                   onChange={(e) => setCustomParty(e.target.value)}
                   required
                   placeholder="e.g., charlie"
-                  className="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/50 text-white rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none placeholder:text-slate-500"
+                  className="w-full px-4 py-3 bg-surface-hover border border-surface-border text-white rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent outline-none placeholder:text-slate-500"
                 />
               </div>
               <div>
@@ -158,7 +158,7 @@ export default function Auth() {
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
                   placeholder="Your name (optional)"
-                  className="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/50 text-white rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none placeholder:text-slate-500"
+                  className="w-full px-4 py-3 bg-surface-hover border border-surface-border text-white rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent outline-none placeholder:text-slate-500"
                 />
               </div>
               <div>
@@ -169,8 +169,8 @@ export default function Auth() {
                     onClick={() => setCustomRole("sender")}
                     className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${
                       customRole === "sender"
-                        ? "bg-violet-500/20 border-violet-500/40 text-violet-300 shadow-sm shadow-violet-500/10"
-                        : "bg-slate-800/80 border-slate-700/50 text-slate-400 hover:border-slate-600 hover:text-slate-300"
+                        ? "bg-white/10 border-white/20 text-white"
+                        : "bg-surface-hover border-surface-border text-slate-400 hover:border-surface-light hover:text-slate-300"
                     }`}
                   >
                     <Send className="w-4 h-4" />
@@ -181,8 +181,8 @@ export default function Auth() {
                     onClick={() => setCustomRole("claimer")}
                     className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${
                       customRole === "claimer"
-                        ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300 shadow-sm shadow-emerald-500/10"
-                        : "bg-slate-800/80 border-slate-700/50 text-slate-400 hover:border-slate-600 hover:text-slate-300"
+                        ? "bg-white/10 border-white/20 text-white"
+                        : "bg-surface-hover border-surface-border text-slate-400 hover:border-surface-light hover:text-slate-300"
                     }`}
                   >
                     <Download className="w-4 h-4" />
@@ -193,7 +193,7 @@ export default function Auth() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-violet-500 to-purple-500 text-white py-3 rounded-xl font-semibold hover:from-violet-600 hover:to-purple-600 transition-all shadow-lg shadow-violet-500/20 disabled:opacity-50"
+                className="w-full bg-white text-surface py-3 rounded-xl font-display font-semibold hover:bg-slate-200 transition-all shadow-lg disabled:opacity-50"
               >
                 {loading ? "Connecting..." : "Connect"}
               </button>

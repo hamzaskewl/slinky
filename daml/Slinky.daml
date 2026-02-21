@@ -1,4 +1,4 @@
-module PrivyPay where
+module Slinky where
 
 -- | A payment claim link created by a sender.
 -- The contract ID itself serves as the bearer token (the "link secret").

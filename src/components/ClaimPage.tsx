@@ -12,14 +12,12 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Claim preview state (shown when user arrives via claim link)
   const [preview, setPreview] = useState<{ contractId: string; amount: string; currency: string; memo: string } | null>(null);
 
   useEffect(() => {
     if (user) loadData();
   }, [user]);
 
-  // Handle incoming claim link
   useEffect(() => {
     if (pendingClaimId && user) {
       loadClaimPreview(pendingClaimId);
@@ -41,7 +39,6 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
 
   const loadClaimPreview = async (contractId: string) => {
     try {
-      // Use escrow token to fetch the ClaimLink (claimer can't see it directly)
       const escrowId = getPartyId("escrow1");
       const eToken = escrowToken(escrowId);
       const link = await canton.fetchClaimLink(contractId, eToken);
@@ -80,7 +77,6 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
 
       setSuccess(`Payment claimed! ${formatAmount(preview.amount)} ${preview.currency}`);
       setPreview(null);
-      // Clear the URL hash
       window.location.hash = "";
       await loadData();
     } catch (err: any) {
@@ -101,7 +97,7 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
   if (loading && !preview) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-300"></div>
       </div>
     );
   }
@@ -110,7 +106,7 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Download className="w-8 h-8 text-emerald-400" />
+          <Download className="w-8 h-8 text-accent" />
           <div>
             <h2 className="text-2xl font-bold text-white">Claims</h2>
             <p className="text-sm text-slate-400">Claim payments and view your receipts</p>
@@ -118,7 +114,7 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
         </div>
         <button
           onClick={loadData}
-          className="p-2 rounded-lg border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-all"
+          className="p-2 rounded-lg border border-surface-border text-slate-400 hover:text-white hover:border-surface-light transition-all"
         >
           <RefreshCw className="w-5 h-5" />
         </button>
@@ -132,17 +128,17 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
       )}
 
       {success && (
-        <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+        <div className="bg-white/5 border border-white/10 text-slate-300 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
           <Check className="w-4 h-4 shrink-0" />
           {success}
         </div>
       )}
 
-      {/* Claim Preview — shown when user arrives via claim link */}
+      {/* Claim Preview */}
       {preview && (
-        <div className="bg-slate-900/30 backdrop-blur-xl border border-violet-500/30 rounded-2xl p-8 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-violet-500/10 border border-violet-500/20 mb-4">
-            <Download className="w-8 h-8 text-violet-400" />
+        <div className="bg-surface-raised border border-surface-border rounded-2xl p-8 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 border border-white/10 mb-4">
+            <Download className="w-8 h-8 text-accent" />
           </div>
 
           <h3 className="text-lg font-semibold text-white mb-1">Payment Available</h3>
@@ -152,7 +148,7 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
           </div>
 
           {preview.memo && (
-            <div className="bg-slate-800/50 rounded-lg p-3 mb-4 inline-block">
+            <div className="bg-surface-hover rounded-lg p-3 mb-4 inline-block">
               <span className="text-slate-400 text-sm">{preview.memo}</span>
             </div>
           )}
@@ -165,11 +161,11 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
           <button
             onClick={handleClaim}
             disabled={claiming}
-            className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+            className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 px-6 py-3 bg-white text-surface rounded-xl font-semibold hover:bg-slate-200 transition-all shadow-lg shadow-white/10 disabled:opacity-50"
           >
             {claiming ? (
               <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-surface"></div>
                 Claiming...
               </>
             ) : (
@@ -185,11 +181,11 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
       {/* Receipts */}
       <div>
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Check className="w-5 h-5 text-emerald-400" />
+          <Check className="w-5 h-5 text-slate-300" />
           Your Receipts
         </h3>
         {receipts.length === 0 && !success ? (
-          <div className="bg-slate-900/30 backdrop-blur-xl border border-slate-800 rounded-xl p-8 text-center">
+          <div className="bg-surface-raised border border-surface-border rounded-xl p-8 text-center">
             <Download className="w-12 h-12 text-slate-600 mx-auto mb-3" />
             <p className="text-slate-400">
               {pendingClaimId ? "Claim the payment above to get your first receipt." : "No receipts yet. Claim a payment link to get started."}
@@ -200,12 +196,12 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
             {receipts.map((receipt) => (
               <div
                 key={receipt.contractId}
-                className="bg-slate-900/30 backdrop-blur-xl border border-emerald-500/20 rounded-xl p-4"
+                className="bg-surface-raised border border-surface-border rounded-xl p-4"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-emerald-500/10 rounded-lg">
-                      <Check className="w-5 h-5 text-emerald-400" />
+                    <div className="p-2 bg-white/5 rounded-lg">
+                      <Check className="w-5 h-5 text-slate-300" />
                     </div>
                     <div>
                       <div className="font-medium text-white">
@@ -217,7 +213,7 @@ export default function ClaimPage({ pendingClaimId }: { pendingClaimId?: string 
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="px-3 py-1 rounded-full text-xs font-medium border bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
+                    <span className="px-3 py-1 rounded-full text-xs font-medium border bg-white/5 text-slate-300 border-surface-border">
                       Received
                     </span>
                     <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">

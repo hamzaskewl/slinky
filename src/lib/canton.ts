@@ -1,12 +1,12 @@
-// Canton JSON API client — PrivyPay
-// Private payment claim links on Canton Network
+// Canton JSON API client — Slinky
+// Stealth payment links on Canton Network
 // Docs: https://docs.daml.com/json-api/
 
 // In dev, Vite proxies /v1/* to localhost:7575 (avoids CORS)
 // In production, set VITE_CANTON_API_URL to the actual Canton JSON API endpoint
 const CANTON_API = import.meta.env.VITE_CANTON_API_URL || '';
 const PACKAGE_ID = import.meta.env.VITE_DAML_PACKAGE_ID || '';
-const MODULE_NAME = 'PrivyPay';
+const MODULE_NAME = 'Slinky';
 
 // -- Types matching our Daml templates --
 
@@ -79,7 +79,7 @@ function adminToken(): string {
   const payload = base64url(JSON.stringify({
     "https://daml.com/ledger-api": {
       ledgerId: "sandbox",
-      applicationId: "privypay",
+      applicationId: "slinky",
       admin: true,
     },
     exp: Math.floor(Date.now() / 1000) + 86400,
@@ -93,7 +93,7 @@ export function escrowToken(escrowPartyId: string): string {
   const payload = base64url(JSON.stringify({
     "https://daml.com/ledger-api": {
       ledgerId: "sandbox",
-      applicationId: "privypay",
+      applicationId: "slinky",
       actAs: [escrowPartyId],
       readAs: [escrowPartyId],
     },
@@ -222,7 +222,7 @@ export async function fetchContract<T>(
   }
 }
 
-// -- Convenience functions for PrivyPay templates --
+// -- Convenience functions for Slinky templates --
 
 export const canton = {
   createClaimLink: (data: ClaimLink, token: string) =>

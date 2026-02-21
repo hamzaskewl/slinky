@@ -31,7 +31,7 @@ function generateLocalToken(partyId: string): string {
   const payload = base64url(JSON.stringify({
     "https://daml.com/ledger-api": {
       ledgerId: "sandbox",
-      applicationId: "privypay",
+      applicationId: "slinky",
       actAs: [partyId],
       readAs: [partyId],
     },
@@ -46,16 +46,16 @@ const SHARED_PARTIES = ['escrow1'];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(() => {
-    const saved = localStorage.getItem("privypay_user");
+    const saved = localStorage.getItem("slinky_user");
     if (!saved) return null;
     const parsed = JSON.parse(saved);
     if (parsed.partyId && !parsed.partyId.includes('::')) {
-      localStorage.removeItem("privypay_user");
+      localStorage.removeItem("slinky_user");
       return null;
     }
     return parsed;
   });
-  const [loading, setLoading] = useState(!!localStorage.getItem("privypay_user"));
+  const [loading, setLoading] = useState(!!localStorage.getItem("slinky_user"));
 
   // Re-populate party registry when restoring session from localStorage
   useEffect(() => {
@@ -86,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         role,
         email: "",
       };
-      localStorage.setItem("privypay_user", JSON.stringify(profile));
+      localStorage.setItem("slinky_user", JSON.stringify(profile));
       setUser(profile);
     } catch (err) {
       console.error("Failed to allocate party:", err);
@@ -113,7 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         role,
         email,
       };
-      localStorage.setItem("privypay_user", JSON.stringify(profile));
+      localStorage.setItem("slinky_user", JSON.stringify(profile));
       setUser(profile);
     } catch (err) {
       console.error("Failed to allocate party:", err);
@@ -124,7 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = useCallback(() => {
-    localStorage.removeItem("privypay_user");
+    localStorage.removeItem("slinky_user");
     setUser(null);
   }, []);
 
