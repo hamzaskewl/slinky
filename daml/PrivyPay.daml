@@ -1,0 +1,98 @@
+module PrivyPay where
+
+-- | A payment claim link created by a sender.
+-- The contract ID itself serves as the bearer token (the "link secret").
+-- Only the sender and escrow can see this contract.
+-- Privacy: claimer never sees this contract at all.
+template ClaimLink
+  with
+    sender    : Party
+    escrow    : Party
+    amount    : Decimal
+    currency  : Text
+    memo      : Text
+    createdAt : Text
+  where
+    signatory sender
+    observer escrow
+
+    -- Escrow processes a claim on behalf of the claimer.
+    -- Creates a ClaimReceipt (visible to claimer, NOT sender)
+    -- and a ClaimNotification (visible to sender, claimer identity hidden).
+    choice ProcessClaim : (ContractId ClaimReceipt, ContractId ClaimNotification)
+      with
+        claimer   : Party
+        claimedAt : Text
+      controller escrow
+      do
+        receiptId <- create ClaimReceipt with
+          escrow
+          claimer
+          amount
+          currency
+          memo
+          claimedAt
+        notificationId <- create ClaimNotification with
+          sender
+          escrow
+          amount
+          currency
+          claimedAt
+        return (receiptId, notificationId)
+
+    -- Sender can revoke an unclaimed link at any time.
+    choice RevokeLink : ContractId RevokedLink
+      with
+        revokedAt : Text
+      controller sender
+      do
+        create RevokedLink with
+          sender
+          escrow
+          amount
+          currency
+          memo
+          revokedAt
+
+
+-- | Proof of payment for the claimer.
+-- PRIVACY: sender is NOT an observer — they never know who claimed.
+template ClaimReceipt
+  with
+    escrow    : Party
+    claimer   : Party
+    amount    : Decimal
+    currency  : Text
+    memo      : Text
+    claimedAt : Text
+  where
+    signatory escrow
+    observer claimer
+
+
+-- | Notification for the sender that their link was claimed.
+-- PRIVACY: claimer Party is NOT a field — sender never knows who claimed.
+template ClaimNotification
+  with
+    sender    : Party
+    escrow    : Party
+    amount    : Decimal
+    currency  : Text
+    claimedAt : Text
+  where
+    signatory escrow
+    observer sender
+
+
+-- | Record that a link was revoked by the sender before anyone claimed it.
+template RevokedLink
+  with
+    sender    : Party
+    escrow    : Party
+    amount    : Decimal
+    currency  : Text
+    memo      : Text
+    revokedAt : Text
+  where
+    signatory sender
+    observer escrow

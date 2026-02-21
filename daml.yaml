@@ -1,0 +1,9 @@
+sdk-version: 2.10.3
+name: privypay
+source: daml
+version: 0.1.0
+dependencies:
+  - daml-prim
+  - daml-stdlib
+build-options:
+  - --target=1.15
