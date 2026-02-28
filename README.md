@@ -1,4 +1,4 @@
-# slinky - 🏆$1,000 CANTON NETWORK Bounty - Private dAPP Winner
+# slinky -
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-slinky-white?style=for-the-badge&logo=railway&logoColor=white)](https://slinky-production.up.railway.app)
 [![Canton Network](https://img.shields.io/badge/Canton_Network-Sandbox-0f172a?style=for-the-badge)](https://canton.network)
@@ -8,7 +8,7 @@
 
 Private payment claim links on Canton Network. Sender and claimer never learn each other's identity. Privacy enforced at the Daml contract level, not patched onto the UI.
 
-**ETHDenver 2026 · Canton Network Track**
+**ETHDenver 2026 · 🏆$1,000 Winner - Canton Network Private dApp Track 🏆
 
 [Live Demo](https://slinky-production.up.railway.app) · [Demo Video](#)
 
