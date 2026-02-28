@@ -1,4 +1,4 @@
-# slinky - 🏆$1,000 CANTON NETWORK Bounty - Private dAPP Winner🏆
+# slinky - 🏆$1,000 CANTON NETWORK Bounty - Private dAPP Winner
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-slinky-white?style=for-the-badge&logo=railway&logoColor=white)](https://slinky-production.up.railway.app)
 [![Canton Network](https://img.shields.io/badge/Canton_Network-Sandbox-0f172a?style=for-the-badge)](https://canton.network)
